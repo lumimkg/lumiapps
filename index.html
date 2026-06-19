@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUMI Aesthetic - Buku Menu Digital</title>
+    <!-- Google Fonts: Playfair Display & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ["Playfair Display", "serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              gold: {
+                50: "#FAF6F0",
+                100: "#F5ECE1",
+                200: "#E6D3BE",
+                300: "#D2B495",
+                400: "#C5A880",
+                500: "#B08E66",
+                600: "#9C784F",
+                700: "#81613E",
+              },
+              rose: {
+                50: "#FFF9F9",
+                100: "#FFEFEF",
+                200: "#FFDADA",
+                300: "#FCA5A5",
+                400: "#F87171",
+              },
+              dark: "#2D2424",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Alpine.js (for state management & interactivity) -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+
+    <!-- FontAwesome for Premium Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f5ece1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c5a880;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gold-50 text-dark font-sans min-h-screen selection:bg-gold-200"
+    x-data="clinicMenu()"
+    x-init="initData()"
+  >
+    <!-- Top Decorative Line -->
+    <div
+      class="h-2 w-full bg-gradient-to-r from-gold-300 via-gold-500 to-gold-300"
+    ></div>
+
+    <!-- MAIN APP WRAPPER (optimized for Tablet Aspect Ratios) -->
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col min-h-screen justify-between"
+    >
+      <!-- HEADER SECTION -->
+      <header
+        class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-gold-100 shadow-sm"
+      >
+        <div class="text-center md:text-left">
+          <span
+            class="text-xs uppercase tracking-widest text-gold-600 font-semibold"
+            >Best Facial Experience</span
+          >
+          <h1
+            class="text-3xl md:text-4xl font-serif font-semibold text-dark flex items-center gap-3 justify-center md:justify-start"
+          >
+            <span>LUMI Aesthetic</span>
+            <span class="text-gold-500 font-light font-sans text-xl">|</span>
+            <span
+              class="text-lg font-sans tracking-widest text-gold-500 font-medium self-end mb-1"
+              >CLINIC</span
+            >
+          </h1>
+          <p class="text-xs text-stone-500 mt-1">
+            Gunakan tablet ini untuk menjelajahi menu perawatan kami secara
+            interaktif.
+          </p>
+        </div>
+
+        <!-- Header Actions -->
+        <div
+          class="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end"
+        >
+          <!-- Smart Skin Quiz Button -->
+          <button
+            @click="openQuiz = true"
+            class="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-medium px-5 py-3 rounded-2xl flex items-center gap-2 text-sm shadow-md shadow-gold-600/10 active:scale-95 transition"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
+            <span>Skin Analysis Quiz</span>
+          </button>
+
+          <!-- Consultation Checklist Trigger -->
+          <button
+            @click="openCart = !openCart"
+            class="relative bg-white border-2 border-gold-200 hover:bg-gold-100 text-dark font-semibold px-5 py-3 rounded-2xl flex items-center gap-2 text-sm transition active:scale-95"
+          >
+            <i class="fa-solid fa-spa text-gold-600"></i>
+            <span>Pilihan Saya</span>
+            <span
+              class="bg-gold-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold"
+              x-text="selectedTreatments.length"
+              >0</span
+            >
+          </button>
+        </div>
+      </header>
+
+      <!-- FILTER AND SEARCH NAVIGATION -->
+      <section class="mb-8 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        <!-- Search Input -->
+        <div class="lg:col-span-4 relative">
+          <span
+            class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gold-400"
+          >
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input
+            type="text"
+            x-model="searchQuery"
+            placeholder="Cari perawatan kecantikan..."
+            class="w-full bg-white pl-11 pr-4 py-3.5 rounded-2xl border border-gold-200 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent text-sm shadow-sm transition"
+          />
+        </div>
+
+        <!-- Categories & Concern Filters -->
+        <div
+          class="lg:col-span-8 flex flex-wrap gap-2 items-center justify-start lg:justify-end"
+        >
+          <!-- Treatment Class Category Tabs -->
+          <div
+            class="bg-white p-1 rounded-2xl border border-gold-200 flex shadow-sm w-full sm:w-auto"
+          >
+            <button
+              @click="activeCategory = 'all'"
+              :class="activeCategory === 'all' ? 'bg-gold-500 text-white shadow-sm' : 'text-stone-600 hover:text-gold-600'"
+              class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition"
+            >
+              Semua
+            </button>
+            <button
+              @click="activeCategory = 'facial'"
+              :class="activeCategory === 'facial' ? 'bg-gold-500 text-white shadow-sm' : 'text-stone-600 hover:text-gold-600'"
+              class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition"
+            >
+              Facial
+            </button>
+            <button
+              @click="activeCategory = 'doctor'"
+              :class="activeCategory === 'doctor' ? 'bg-gold-500 text-white shadow-sm' : 'text-stone-600 hover:text-gold-600'"
+              class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wider uppercase transition"
+            >
+              Dokter
+            </button>
+          </div>
+
+          <!-- Concern Dropdown Filter -->
+          <div class="relative w-full sm:w-auto">
+            <select
+              x-model="selectedConcern"
+              class="w-full sm:w-auto bg-white border border-gold-200 text-stone-600 px-4 py-3.5 rounded-2xl text-xs font-semibold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-gold-400 cursor-pointer shadow-sm"
+            >
+              <option value="all">Fokus: Semua Masalah Kulit</option>
+              <option value="kusam">Kusam & Noda Hitam</option>
+              <option value="jerawat">Berjerawat & Pori-Pori</option>
+              <option value="penuaan">Kerutan & Penuaan dini</option>
+              <option value="kering">Kering & Sensitif</option>
+              <option value="enno">Kulit Enno</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN LAYOUT COMPONENT: TREATMENT LIST & PERSISTENT CART -->
+      <main
+        class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start flex-grow mb-8"
+      >
+        <!-- MENU GRID -->
+        <section
+          :class="openCart ? 'xl:col-span-8' : 'xl:col-span-12'"
+          class="transition-all duration-300"
+        >
+          <!-- Category Section Heading -->
+          <div class="mb-6 flex justify-between items-center">
+            <h2
+              class="text-2xl font-serif font-bold text-dark flex items-center gap-2"
+            >
+              <span x-text="categoryTitle()">Semua Treatment</span>
+              <span
+                class="text-sm font-sans font-normal text-stone-500"
+                x-text="`(${filteredTreatments.length} item)`"
+              ></span>
+            </h2>
+            <span
+              class="text-xs text-gold-600 bg-gold-100/50 px-3 py-1.5 rounded-full font-medium italic"
+              >Sentuh kartu untuk detail perawatan</span
+            >
+          </div>
+
+          <!-- Empty State -->
+          <template x-if="filteredTreatments.length === 0">
+            <div
+              class="bg-white rounded-3xl p-12 text-center border border-gold-100 shadow-sm"
+            >
+              <i class="fa-solid fa-wand-magic text-gold-300 text-5xl mb-4"></i>
+              <p class="text-stone-500 font-serif text-lg">
+                Tidak ada treatment yang cocok dengan filter atau pencarian
+                Anda.
+              </p>
+              <button
+                @click="resetFilters()"
+                class="text-gold-600 underline text-sm mt-2 hover:text-gold-700 font-medium"
+              >
+                Reset filter & pencarian
+              </button>
+            </div>
+          </template>
+
+          <!-- Grid of Treatments -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2"
+            :class="openCart ? 'lg:grid-cols-2 gap-4' : 'lg:grid-cols-3 gap-6'"
+          >
+            <template x-for="item in filteredTreatments" :key="item.id">
+              <div
+                class="bg-white rounded-3xl border border-gold-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between group active:scale-[0.98]"
+              >
+                <!-- Card Header (Visual Tag) -->
+                <div class="p-6 pb-4">
+                  <div class="flex justify-between items-start gap-2 mb-3">
+                    <span
+                      :class="item.type === 'facial' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'"
+                      class="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border"
+                      x-text="item.type === 'facial' ? 'FACIAL TREATMENT' : 'DOKTER TREATMENT'"
+                    >
+                    </span>
+                    <div class="flex gap-1">
+                      <template x-for="concern in item.concerns">
+                        <span
+                          class="text-[9px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md font-medium capitalize"
+                          x-text="concern"
+                        ></span>
+                      </template>
+                    </div>
+                  </div>
+
+                  <!-- Title -->
+                  <h3
+                    @click="openDetails(item)"
+                    class="text-lg font-serif font-bold text-dark group-hover:text-gold-600 transition cursor-pointer"
+                    x-text="item.name"
+                  ></h3>
+                  <p
+                    class="text-stone-500 text-xs mt-1.5 line-clamp-2"
+                    x-text="item.shortDesc"
+                  ></p>
+                </div>
+
+                <!-- Card Footer (Price, Duration, Action) -->
+                <div
+                  class="bg-gold-50/40 p-6 pt-4 border-t border-gold-50 mt-auto"
+                >
+                  <div class="flex justify-between items-center gap-4 mb-4">
+                    <div>
+                      <span
+                        class="text-[10px] uppercase tracking-wider text-stone-400 block font-medium"
+                        >Investasi</span
+                      >
+                      <span
+                        class="text-base font-bold text-dark font-sans"
+                        x-text="formatRupiah(item.price)"
+                      ></span>
+                    </div>
+                    <div class="text-right">
+                      <span
+                        class="text-[10px] uppercase tracking-wider text-stone-400 block font-medium"
+                        >Durasi</span
+                      >
+                      <span
+                        class="text-xs font-semibold text-stone-600 flex items-center justify-end gap-1"
+                      >
+                        <i class="fa-regular fa-clock text-gold-500"></i>
+                        <span x-text="item.duration + ' Menit'"></span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-12 gap-2">
+                    <button
+                      @click="openDetails(item)"
+                      class="col-span-4 bg-white border border-gold-200 hover:bg-gold-100 text-stone-700 font-semibold px-2 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition"
+                    >
+                      Detail
+                    </button>
+                    <button
+                      @click="toggleSelection(item)"
+                      :class="isAdded(item.id) ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-transparent' : 'bg-gold-500 hover:bg-gold-600 text-white'"
+                      class="col-span-8 font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95"
+                    >
+                      <i
+                        :class="isAdded(item.id) ? 'fa-solid fa-check' : 'fa-solid fa-plus'"
+                      ></i>
+                      <span
+                        x-text="isAdded(item.id) ? 'Dipilih' : 'Tambah Konsultasi'"
+                      ></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </section>
+
+        <!-- SELECTED ITEMS SIDEBAR (Cart) -->
+        <aside
+          x-show="openCart"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 translate-x-12"
+          x-transition:enter-end="opacity-100 translate-x-0"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="opacity-100 translate-x-0"
+          x-transition:leave-end="opacity-0 translate-x-12"
+          class="xl:col-span-4 bg-white rounded-3xl border border-gold-200 p-6 shadow-md sticky top-6"
+        >
+          <div
+            class="flex justify-between items-center pb-4 border-b border-gold-100 mb-4"
+          >
+            <h3
+              class="font-serif font-bold text-lg text-dark flex items-center gap-2"
+            >
+              <i class="fa-solid fa-notes-medical text-gold-500"></i>
+              <span>Pilihan Konsultasi</span>
+            </h3>
+            <button
+              @click="openCart = false"
+              class="text-stone-400 hover:text-stone-600 text-sm"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Empty Selection State -->
+          <div
+            x-show="selectedTreatments.length === 0"
+            class="text-center py-12"
+          >
+            <i class="fa-solid fa-spa text-gold-200 text-4xl mb-3"></i>
+            <p class="text-sm text-stone-500 font-serif">
+              Belum ada treatment yang dipilih.
+            </p>
+            <p class="text-xs text-stone-400 mt-1">
+              Sentuh tombol "Tambah Konsultasi" untuk merangkum rencana
+              kecantikan Anda.
+            </p>
+          </div>
+
+          <!-- Selected Treatments List -->
+          <div class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+            <template
+              x-for="item in selectedTreatments"
+              :key="'selected-' + item.id"
+            >
+              <div
+                class="flex items-center justify-between p-3 rounded-2xl bg-gold-50/50 border border-gold-100 hover:bg-gold-100/30 transition"
+              >
+                <div class="flex-grow pr-2">
+                  <h4
+                    class="text-xs font-bold text-dark font-serif"
+                    x-text="item.name"
+                  ></h4>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span
+                      class="text-[10px] text-stone-500"
+                      x-text="formatRupiah(item.price)"
+                    ></span>
+                    <span class="text-[10px] text-stone-300">•</span>
+                    <span
+                      class="text-[10px] text-stone-500"
+                      x-text="item.duration + ' Mnt'"
+                    ></span>
+                  </div>
+                </div>
+                <button
+                  @click="toggleSelection(item)"
+                  class="text-stone-400 hover:text-red-500 p-1.5 rounded-lg active:scale-95 transition"
+                >
+                  <i class="fa-regular fa-trash-can text-sm"></i>
+                </button>
+              </div>
+            </template>
+          </div>
+
+          <!-- Summary Section -->
+          <div
+            x-show="selectedTreatments.length > 0"
+            class="border-t border-gold-100 pt-4 mt-4 space-y-3"
+          >
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-stone-500">Estimasi Total Waktu:</span>
+              <span
+                class="font-bold text-stone-700"
+                x-text="totalDuration + ' Menit'"
+              ></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-serif font-bold text-dark"
+                >Rencana Total:</span
+              >
+              <span
+                class="text-lg font-bold text-gold-600"
+                x-text="formatRupiah(totalPrice)"
+              ></span>
+            </div>
+
+            <!-- CTA Actions -->
+            <div class="pt-2 space-y-2">
+              <button
+                @click="showSummaryModal = true"
+                class="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-bold py-3.5 rounded-2xl text-xs uppercase tracking-wider shadow-md shadow-gold-600/10 active:scale-95 transition"
+              >
+                Simpan & Tunjukkan ke Dokter
+              </button>
+              <button
+                @click="clearSelection()"
+                class="w-full bg-stone-100 hover:bg-stone-200 text-stone-600 font-semibold py-2.5 rounded-xl text-xs transition"
+              >
+                Kosongkan Pilihan
+              </button>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- FOOTER & CLINIC INFO -->
+      <footer
+        class="bg-white/50 backdrop-blur-sm border border-gold-100/50 rounded-3xl p-6 text-center text-xs text-stone-500 space-y-2"
+      >
+        <div
+          class="flex flex-wrap justify-center gap-x-6 gap-y-2 font-medium text-stone-600"
+        >
+          <span
+            ><i class="fa-solid fa-clock text-gold-500 mr-1.5"></i>Jam
+            Operasional: 09:00 - 22:00 WIB</span
+          >
+          <span
+            ><i class="fa-solid fa-location-dot text-gold-500 mr-1.5"></i>Lippo
+            Mall Puri, Jakarta Barat</span
+          >
+          <span
+            ><i class="fa-brands fa-whatsapp text-emerald-500 mr-1.5"></i
+            >Konsultasi Chat: 0812-3456-7890</span
+          >
+        </div>
+        <p class="font-serif italic mt-2">
+          "Kecantikan alami yang terpancar dari kulit sehat dan terawat."
+        </p>
+        <p class="text-[10px] text-stone-400 mt-1">
+          &copy; 2026 LUMI Aesthetic Clinic. Semua Hak Cipta Dilindungi.
+        </p>
+      </footer>
+
+      <!-- TREATMENT DETAIL MODAL -->
+      <div
+        x-show="selectedItemDetail !== null"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+      >
+        <div
+          class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-gold-100 flex flex-col max-h-[90vh]"
+          @click.away="selectedItemDetail = null"
+        >
+          <!-- Modal Banner -->
+          <div
+            class="relative bg-gradient-to-r from-gold-100 to-gold-50 p-6 border-b border-gold-100"
+          >
+            <button
+              @click="selectedItemDetail = null"
+              class="absolute top-4 right-4 bg-white hover:bg-gold-50 text-stone-500 hover:text-stone-700 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <span
+              :class="selectedItemDetail?.type === 'facial' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'"
+              class="text-[9px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border mb-2 inline-block"
+              x-text="selectedItemDetail?.type === 'facial' ? 'FACIAL TREATMENT' : 'DOKTER TREATMENT'"
+            >
+            </span>
+            <h3
+              class="text-xl font-serif font-bold text-dark mt-1"
+              x-text="selectedItemDetail?.name"
+            ></h3>
+          </div>
+
+          <!-- Modal Content -->
+          <div class="p-6 space-y-5 overflow-y-auto flex-grow text-sm">
+            <div>
+              <h4
+                class="text-xs uppercase tracking-wider text-gold-600 font-bold mb-1.5"
+              >
+                Penjelasan Singkat
+              </h4>
+              <p
+                class="text-stone-600 leading-relaxed"
+                x-text="selectedItemDetail?.fullDesc"
+              ></p>
+            </div>
+
+            <div
+              class="grid grid-cols-2 gap-4 bg-gold-50/50 p-4 rounded-2xl border border-gold-100/50"
+            >
+              <div>
+                <span
+                  class="text-[10px] uppercase tracking-wider text-stone-400 block font-semibold"
+                  >Investasi</span
+                >
+                <span
+                  class="text-base font-bold text-dark"
+                  x-text="formatRupiah(selectedItemDetail?.price || 0)"
+                ></span>
+              </div>
+              <div>
+                <span
+                  class="text-[10px] uppercase tracking-wider text-stone-400 block font-semibold"
+                  >Durasi</span
+                >
+                <span
+                  class="text-sm font-semibold text-stone-700 flex items-center gap-1.5 mt-0.5"
+                >
+                  <i class="fa-regular fa-clock text-gold-500"></i>
+                  <span
+                    x-text="(selectedItemDetail?.duration || 0) + ' Menit'"
+                  ></span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Benefits / Solusi Masalah -->
+            <div>
+              <h4
+                class="text-xs uppercase tracking-wider text-gold-600 font-bold mb-2"
+              >
+                Manfaat Utama & Solusi Masalah
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <template x-for="concern in selectedItemDetail?.concerns || []">
+                  <span
+                    class="bg-gold-100 text-gold-800 text-xs px-3 py-1.5 rounded-xl font-semibold uppercase tracking-wider border border-gold-200"
+                    x-text="concern"
+                  ></span>
+                </template>
+              </div>
+            </div>
+
+            <!-- Treatment Protocol -->
+            <div>
+              <h4
+                class="text-xs uppercase tracking-wider text-gold-600 font-bold mb-2"
+              >
+                Protokol Perawatan
+              </h4>
+              <ul class="space-y-2 text-stone-600">
+                <template
+                  x-for="(step, idx) in selectedItemDetail?.steps || []"
+                  :key="idx"
+                >
+                  <li class="flex gap-2.5">
+                    <span
+                      class="text-gold-500 font-bold"
+                      x-text="(idx + 1) + '.'"
+                    ></span>
+                    <span x-text="step"></span>
+                  </li>
+                </template>
+              </ul>
+            </div>
+
+            <!-- Down Time & Skin Tips -->
+            <div
+              class="bg-stone-50 p-4 rounded-2xl border border-stone-100 text-stone-500 text-xs space-y-1.5"
+            >
+              <div
+                class="flex items-center gap-1 text-gold-600 font-bold uppercase tracking-wider"
+              >
+                <i class="fa-solid fa-circle-exclamation text-xs"></i>
+                <span>Catatan & Pemulihan (Downtime)</span>
+              </div>
+              <p
+                x-text="selectedItemDetail?.downtime || 'Tidak ada downtime. Dapat langsung menggunakan make-up dan beraktivitas.'"
+              ></p>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="p-6 bg-stone-50 border-t border-stone-100 flex gap-3">
+            <button
+              @click="selectedItemDetail = null"
+              class="flex-1 bg-white hover:bg-stone-100 text-stone-600 font-semibold py-3 rounded-2xl text-xs uppercase tracking-wider border border-stone-200 transition"
+            >
+              Tutup
+            </button>
+            <button
+              @click="toggleSelection(selectedItemDetail); selectedItemDetail = null"
+              :class="isAdded(selectedItemDetail?.id) ? 'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200' : 'bg-gold-500 hover:bg-gold-600 text-white'"
+              class="flex-[1.5] font-bold py-3 rounded-2xl text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <i
+                :class="isAdded(selectedItemDetail?.id) ? 'fa-regular fa-trash-can' : 'fa-solid fa-plus'"
+              ></i>
+              <span
+                x-text="isAdded(selectedItemDetail?.id) ? 'Hapus Pilihan' : 'Tambah Konsultasi'"
+              ></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKIN QUIZ MODAL -->
+      <div
+        x-show="openQuiz"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+      >
+        <div
+          class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-gold-100 flex flex-col"
+          @click.away="closeQuizModal()"
+        >
+          <!-- Quiz Header -->
+          <div
+            class="p-6 bg-gradient-to-r from-gold-500 to-gold-600 text-white flex justify-between items-center"
+          >
+            <div>
+              <h3 class="text-lg font-serif font-bold">
+                Smart Skin Recommendation
+              </h3>
+              <p class="text-xs text-gold-100">
+                Temukan perawatan yang paling tepat untuk kulit Anda.
+              </p>
+            </div>
+            <button
+              @click="closeQuizModal()"
+              class="text-white/80 hover:text-white text-xl"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Quiz Progress Bar -->
+          <div class="w-full bg-gold-100 h-1.5 flex">
+            <div
+              class="bg-gold-400 h-full transition-all duration-300"
+              :style="`width: ${((quizStep + 1) / 3) * 100}%`"
+            ></div>
+          </div>
+
+          <!-- Quiz Steps Content -->
+          <div class="p-6 space-y-6">
+            <!-- STEP 1: Jenis Kulit -->
+            <div x-show="quizStep === 0" class="space-y-4">
+              <h4 class="text-sm font-bold text-dark text-center mb-2">
+                1. Bagaimana kondisi utama kulit Anda saat ini?
+              </h4>
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  @click="quizAnswers.skinType = 'kering'; quizStep = 1"
+                  class="p-4 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition space-y-1"
+                >
+                  <span class="block font-bold text-xs text-dark"
+                    >Kering & Sensitif</span
+                  >
+                  <span class="text-[10px] text-stone-500 block leading-tight"
+                    >Terasa bersisik, kaku, gampang kemerahan.</span
+                  >
+                </button>
+                <button
+                  @click="quizAnswers.skinType = 'berminyak'; quizStep = 1"
+                  class="p-4 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition space-y-1"
+                >
+                  <span class="block font-bold text-xs text-dark"
+                    >Berminyak & Pori Lebar</span
+                  >
+                  <span class="text-[10px] text-stone-500 block leading-tight"
+                    >Mengkilap di T-zone, komedo, pori terlihat jelas.</span
+                  >
+                </button>
+                <button
+                  @click="quizAnswers.skinType = 'kombinasi'; quizStep = 1"
+                  class="p-4 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition space-y-1"
+                >
+                  <span class="block font-bold text-xs text-dark"
+                    >Kombinasi / Normal</span
+                  >
+                  <span class="text-[10px] text-stone-500 block leading-tight"
+                    >Berminyak di area tertentu, lainnya cenderung normal.</span
+                  >
+                </button>
+                <button
+                  @click="quizAnswers.skinType = 'penuaan'; quizStep = 1"
+                  class="p-4 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition space-y-1"
+                >
+                  <span class="block font-bold text-xs text-dark"
+                    >Tanda Penuaan</span
+                  >
+                  <span class="text-[10px] text-stone-500 block leading-tight"
+                    >Garis halus, kendur, kurangnya kekenyalan alami.</span
+                  >
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Masalah Utama -->
+            <div x-show="quizStep === 1" class="space-y-4">
+              <h4 class="text-sm font-bold text-dark text-center mb-2">
+                2. Apa target utama perbaikan kulit Anda?
+              </h4>
+              <div class="grid grid-cols-1 gap-2.5">
+                <button
+                  @click="quizAnswers.target = 'kusam'; runQuizEvaluation()"
+                  class="p-3 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition flex items-center gap-3"
+                >
+                  <span
+                    class="w-8 h-8 rounded-full bg-gold-100 flex items-center justify-center text-gold-600"
+                    ><i class="fa-solid fa-sun text-xs"></i
+                  ></span>
+                  <div>
+                    <span class="block font-bold text-xs text-dark"
+                      >Mengatasi Kusam & Noda</span
+                    >
+                    <span class="text-[10px] text-stone-400"
+                      >Meratakan warna kulit, menghilangkan
+                      hiperpigmentasi.</span
+                    >
+                  </div>
+                </button>
+                <button
+                  @click="quizAnswers.target = 'jerawat'; runQuizEvaluation()"
+                  class="p-3 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition flex items-center gap-3"
+                >
+                  <span
+                    class="w-8 h-8 rounded-full bg-gold-100 flex items-center justify-center text-gold-600"
+                    ><i class="fa-solid fa-bug text-xs"></i
+                  ></span>
+                  <div>
+                    <span class="block font-bold text-xs text-dark"
+                      >Menyembuhkan Jerawat & Bruntusan</span
+                    >
+                    <span class="text-[10px] text-stone-400"
+                      >Meredakan radang, meminimalkan sumbatan sebum.</span
+                    >
+                  </div>
+                </button>
+                <button
+                  @click="quizAnswers.target = 'vshape'; runQuizEvaluation()"
+                  class="p-3 border border-gold-200 rounded-2xl hover:border-gold-500 hover:bg-gold-50/50 text-left transition flex items-center gap-3"
+                >
+                  <span
+                    class="w-8 h-8 rounded-full bg-gold-100 flex items-center justify-center text-gold-600"
+                    ><i class="fa-solid fa-arrow-up-right-dots text-xs"></i
+                  ></span>
+                  <div>
+                    <span class="block font-bold text-xs text-dark"
+                      >Mengencangkan & V-Shape</span
+                    >
+                    <span class="text-[10px] text-stone-400"
+                      >Menghilangkan double chin, mengencangkan kulit
+                      kendur.</span
+                    >
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: REKOMENDASI HASIL -->
+            <div x-show="quizStep === 2" class="space-y-5">
+              <div class="text-center">
+                <span
+                  class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2 text-xl"
+                  ><i class="fa-solid fa-circle-check"></i
+                ></span>
+                <h4 class="text-sm font-bold text-dark">
+                  Analisis Selesai! Berikut Rekomendasi Anda:
+                </h4>
+                <p class="text-[11px] text-stone-400 mt-1">
+                  Berdasarkan profil kulit Anda, tim medis kami merekomendasikan
+                  treatment berikut:
+                </p>
+              </div>
+
+              <!-- Recommendations List -->
+              <div class="space-y-3">
+                <template
+                  x-for="rec in quizRecommendations"
+                  :key="'rec-' + rec.id"
+                >
+                  <div
+                    class="bg-gold-50/50 border border-gold-100 rounded-2xl p-4 flex justify-between items-center"
+                  >
+                    <div class="pr-2">
+                      <span
+                        :class="rec.type === 'facial' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
+                        class="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border"
+                        x-text="rec.type === 'facial' ? 'FACIAL' : 'DOKTER'"
+                      ></span>
+                      <h5
+                        class="text-xs font-bold text-dark mt-1 font-serif"
+                        x-text="rec.name"
+                      ></h5>
+                      <p
+                        class="text-[10px] text-stone-500 line-clamp-1"
+                        x-text="rec.shortDesc"
+                      ></p>
+                    </div>
+                    <button
+                      @click="toggleSelection(rec); closeQuizModal()"
+                      class="bg-gold-500 hover:bg-gold-600 text-white text-xs font-semibold px-3 py-2 rounded-xl transition whitespace-nowrap"
+                    >
+                      Pilih Treatment
+                    </button>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz Footer Buttons -->
+          <div
+            class="p-4 bg-stone-50 border-t border-stone-100 flex justify-between items-center"
+          >
+            <button
+              x-show="quizStep > 0 && quizStep < 2"
+              @click="quizStep--"
+              class="bg-white hover:bg-stone-100 text-stone-600 font-semibold px-4 py-2.5 rounded-xl text-xs transition"
+            >
+              Kembali
+            </button>
+            <button
+              @click="closeQuizModal()"
+              class="text-stone-400 hover:text-stone-600 font-semibold text-xs py-2 px-4 transition ml-auto"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONSULTATION SUMMARY MODAL (Generate QR Code / Receptionist View) -->
+      <div
+        x-show="showSummaryModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+      >
+        <div
+          class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-gold-100 flex flex-col"
+          @click.away="showSummaryModal = false"
+        >
+          <div
+            class="p-6 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-center relative"
+          >
+            <button
+              @click="showSummaryModal = false"
+              class="absolute top-4 right-4 text-white/80 hover:text-white text-lg"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-serif font-bold text-lg">Ringkasan Konsultasi</h3>
+            <p class="text-xs text-gold-100 mt-1">
+              Silakan tunjukkan layar ini kepada Dokter atau Resepsionis.
+            </p>
+          </div>
+
+          <div class="p-6 space-y-6 text-center">
+            <!-- Virtual Queue / Token -->
+            <div
+              class="bg-gold-50/50 border-2 border-dashed border-gold-200 p-4 rounded-2xl"
+            >
+              <span
+                class="text-[10px] text-stone-400 uppercase tracking-widest block font-medium"
+                >Nomor Pilihan</span
+              >
+              <span
+                class="text-3xl font-serif font-bold text-gold-600 my-1 block"
+                x-text="'AG-' + Math.floor(100 + Math.random() * 900)"
+              ></span>
+              <span
+                class="text-[10px] text-stone-400 block"
+                x-text="'Dibuat pada: ' + new Date().toLocaleTimeString('id-ID')"
+              ></span>
+            </div>
+
+            <!-- Selected Treatment Count -->
+            <div
+              class="space-y-2 text-left bg-stone-50 p-4 rounded-2xl max-h-[150px] overflow-y-auto"
+            >
+              <template
+                x-for="(item, index) in selectedTreatments"
+                :key="'summary-' + item.id"
+              >
+                <div class="flex justify-between items-center text-xs">
+                  <span
+                    class="font-medium text-stone-600 flex gap-1 items-center"
+                  >
+                    <span
+                      class="text-gold-500 font-bold"
+                      x-text="(index+1) + '.'"
+                    ></span>
+                    <span x-text="item.name"></span>
+                  </span>
+                  <span
+                    class="font-bold text-stone-700"
+                    x-text="formatRupiah(item.price)"
+                  ></span>
+                </div>
+              </template>
+            </div>
+
+            <!-- Totals -->
+            <div
+              class="grid grid-cols-2 gap-4 border-t border-b border-gold-100 py-3 text-left"
+            >
+              <div>
+                <span
+                  class="text-[10px] text-stone-400 uppercase tracking-wider block font-medium"
+                  >Estimasi Waktu</span
+                >
+                <span
+                  class="text-sm font-bold text-stone-700"
+                  x-text="totalDuration + ' Menit'"
+                ></span>
+              </div>
+              <div class="text-right">
+                <span
+                  class="text-[10px] text-stone-400 uppercase tracking-wider block font-medium"
+                  >Total Harga</span
+                >
+                <span
+                  class="text-base font-bold text-gold-600"
+                  x-text="formatRupiah(totalPrice)"
+                ></span>
+              </div>
+            </div>
+
+            <!-- Simulated Reception QR Code -->
+            <div class="flex flex-col items-center justify-center space-y-2">
+              <div
+                class="w-32 h-32 bg-stone-100 border border-stone-200 rounded-2xl flex items-center justify-center relative overflow-hidden p-2"
+              >
+                <!-- QR Code SVG Simulation -->
+                <svg
+                  class="w-full h-full text-stone-800"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <rect x="2" y="2" width="6" height="6" rx="1" />
+                  <rect x="16" y="2" width="6" height="6" rx="1" />
+                  <rect x="2" y="16" width="6" height="6" rx="1" />
+                  <path
+                    d="M10 2h4v2h-4V2zm0 4h2v2h-2V6zm4 0h2v4h-2V6zm2 4h4v2h-4v-2zm-6 4h4v2h-4v-2zm8 2h2v4h-2v-4zm-4 4h4v-2h-4v2zm-4-4h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v-2H6v2zm4 0h2v-2h-2v2z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <span class="text-[10px] text-stone-400"
+                >Scan QR Code di atas untuk memindahkan pilihan ke komputer
+                kasir.</span
+              >
+            </div>
+          </div>
+
+          <div class="p-6 bg-stone-50 border-t border-stone-100 flex gap-2">
+            <button
+              @click="showSummaryModal = false"
+              class="flex-1 bg-white hover:bg-stone-100 text-stone-600 font-semibold py-3 rounded-2xl text-xs uppercase tracking-wider border border-stone-200 transition"
+            >
+              Kembali Ke Menu
+            </button>
+            <button
+              @click="copyDetailsSummary()"
+              class="flex-1 bg-gold-500 hover:bg-gold-600 text-white font-bold py-3 rounded-2xl text-xs uppercase tracking-wider shadow-sm transition active:scale-95"
+            >
+              Salin Teks Ringkasan
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GLOBAL NOTIFICATION TOAST -->
+      <div
+        x-show="toastMessage !== ''"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-4"
+        class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-stone-900/90 text-white font-semibold text-xs px-6 py-3.5 rounded-2xl shadow-xl z-50 flex items-center gap-2"
+        x-cloak
+      >
+        <i class="fa-solid fa-circle-info text-gold-400 text-sm"></i>
+        <span x-text="toastMessage"></span>
+      </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC DEFINITIONS -->
+    <script>
+      function clinicMenu() {
+        return {
+          // UI & State Variables
+          searchQuery: "",
+          activeCategory: "all", // 'all', 'facial', 'doctor'
+          selectedConcern: "all", // 'all', 'kusam', 'jerawat', 'penuaan', 'kering'
+
+          openCart: false,
+          openQuiz: false,
+          quizStep: 0,
+          quizAnswers: {
+            skinType: "",
+            target: "",
+          },
+          quizRecommendations: [],
+
+          selectedItemDetail: null,
+          showSummaryModal: false,
+          toastMessage: "",
+
+          // Selected Treatments Cart state
+          selectedTreatments: [],
+
+          // Static Treatments Data Source
+          treatments: [],
+
+          initData() {
+            this.treatments = [
+              // FACIAL TREATMENTS
+              {
+                id: 1,
+                name: "Aqua Hydra Cleansing Facial",
+                type: "facial",
+                price: 350000,
+                duration: 60,
+                shortDesc:
+                  "Pembersihan komedo mendalam dan hidrasi intensif menggunakan serum berkualitas premium.",
+                fullDesc:
+                  "Perawatan eksfoliasi dan ekstraksi komedo tanpa rasa sakit menggunakan teknologi hidrodermabrasi medis. Mengangkat sel kulit mati sekaligus menyemprotkan serum bergizi ke lapisan kulit terdalam untuk hasil kulit sehat terhidrasi secara instan.",
+                concerns: ["kering", "jerawat", "enno"],
+                steps: [
+                  "Deep cleansing & pemijatan wajah rileks",
+                  "Eksfoliasi kulit mati dengan Hydra-peel",
+                  "Ekstraksi komedo vakum bebas rasa sakit",
+                  "Infusi serum Hyaluronic Acid & Vitamin",
+                  "Cold therapy & Masker penenang kulit",
+                ],
+                downtime:
+                  "Tidak ada downtime. Kulit akan tampak sedikit kemerahan selama 1 jam karena ekstraksi, setelah itu langsung glowing segar.",
+              },
+              {
+                id: 2,
+                name: "Brightening Glow C-Infusion Facial",
+                type: "facial",
+                price: 400000,
+                duration: 75,
+                shortDesc:
+                  "Infusi vitamin C murni dosis tinggi yang dipadukan dengan masker pencerah untuk mengatasi kulit kusam.",
+                fullDesc:
+                  "Perawatan pencerah instan menggunakan kombinasi masker antioksidan dan arus mikro iontoforesis untuk memasukkan Vitamin C murni langsung ke dalam sel melanin kulit. Menyamarkan bintik hitam dan noda bekas jerawat dengan sempurna.",
+                concerns: ["kusam"],
+                steps: [
+                  "Cleansing, scrub lembut, dan massage wajah",
+                  "Pembersihan komedo manual standar klinis",
+                  "Iontoforesis (penyerapan gel Vitamin C dengan gelombang mikro)",
+                  "Peel-off Mask Pencerah Premium",
+                  "Aplikasi Sunscreen & Pelembap pelindung",
+                ],
+                downtime:
+                  "Tidak ada downtime. Sangat direkomendasikan dilakukan 2 hari sebelum acara penting Anda.",
+              },
+              {
+                id: 3,
+                name: "Acne Clear & Soothing Facial",
+                type: "facial",
+                price: 300000,
+                duration: 60,
+                shortDesc:
+                  "Ekstraksi komedo dan sterilisasi jerawat aktif menggunakan teknologi High Frequency untuk meredakan radang.",
+                fullDesc:
+                  "Facial khusus untuk merawat kulit sensitif dan mudah berjerawat. Fokus pada pembersihan menyeluruh sebum penyumbat pori, sterilisasi bakteri P.acnes, dan aplikasi masker khusus tanah liat vulkanis yang menenangkan kemerahan.",
+                concerns: ["jerawat"],
+                steps: [
+                  "Cleansing bebas minyak & penguapan pori-pori",
+                  "Ekstraksi komedo & jerawat matang secara steril oleh beautician terlatih",
+                  "Aplikasi sinar High Frequency (HF) antiseptik",
+                  "Masker Tea Tree & Centella Asiatica",
+                  "Acne serum & ampul penyembuhan jerawat",
+                ],
+                downtime:
+                  "Kemerahan ringan di titik ekstraksi selama 1-2 hari. Disarankan menghindari makeup tebal selama 24 jam pertama.",
+              },
+              {
+                id: 4,
+                name: "Anti-Aging 24K Gold & RF Facial",
+                type: "facial",
+                price: 550000,
+                duration: 90,
+                shortDesc:
+                  "Teknologi Radio Frequency untuk mengencangkan otot wajah yang ditutup dengan kemewahan Masker Emas 24 Karat.",
+                fullDesc:
+                  "Perawatan anti-aging eksklusif yang memadukan kehangatan Radio Frequency (RF) untuk merangsang produksi kolagen kulit alami dengan keagungan masker emas 24k yang berfungsi mendetoksifikasi radikal bebas dan memperhalus tekstur kulit kendur.",
+                concerns: ["penuaan"],
+                steps: [
+                  "Cleansing premium & massage limfatik wajah",
+                  "Aplikasi gel konduktif & pemijatan hangat Radio Frequency (setiap sisi 15 menit)",
+                  "Ekstraksi ringan komedo",
+                  "Aplikasi masker lembaran/bubuk Emas 24K kolagen",
+                  "Sinar PDT (Photodynamic Therapy) Merah untuk regenerasi sel kulit",
+                ],
+                downtime:
+                  "Sangat minim downtime. Kulit wajah akan langsung terasa kencang, kenyal, hangat, dan kencang seketika.",
+              },
+              // DOCTOR TREATMENTS
+              {
+                id: 5,
+                name: "Laser Q-Switched Nd:YAG Rejuvenation",
+                type: "doctor",
+                price: 1200000,
+                duration: 45,
+                shortDesc:
+                  "Perawatan laser medis oleh dokter ahli untuk mengecilkan pori-pori, memudarkan flek hitam melasma, dan meremajakan sel kulit.",
+                fullDesc:
+                  "Teknologi laser non-ablatif premium yang menembus lapisan dermis dalam tanpa merusak kulit luar. Berfungsi memecah pigmentasi gelap (melasma, bekas jerawat, freckles) menjadi partikel halus yang kemudian dibuang secara alami oleh tubuh, sekaligus merangsang produksi kolagen.",
+                concerns: ["kusam", "penuaan"],
+                steps: [
+                  "Konsultasi medis dan pemetaan area kulit oleh dokter kecantikan",
+                  "Deep cleansing & pemakaian kacamata pelindung laser",
+                  "Prosedur Laser Nd:YAG pada seluruh area wajah oleh dokter",
+                  "Pemberian serum penenang & krim anti-iritasi",
+                  "Aplikasi Tabir Surya SPF 50 khusus klinis",
+                ],
+                downtime:
+                  "Kemerahan ringan selama 2-4 jam. Wajib menggunakan tabir surya secara disiplin dan dilarang menggunakan produk eksfoliasi selama 5 hari.",
+              },
+              {
+                id: 6,
+                name: "Korean Baby Glow Skinbooster",
+                type: "doctor",
+                price: 1800000,
+                duration: 30,
+                shortDesc:
+                  "Injeksi mikro Asam Hialuronat dosis murni & multivitamin oleh dokter untuk kelembapan kulit bersinar maksimal layaknya artis Korea.",
+                fullDesc:
+                  "Terapi injeksi mikro langsung ke bawah epidermis menggunakan jarum halus khusus (atau vital injector). Memasukkan formula istimewa Asam Hialuronat murni dosis tinggi, Peptide pembangun sel, dan multivitamin pencerah untuk menyulap kulit kering kusam menjadi berair, kenyal, dan glowing memantulkan cahaya.",
+                concerns: ["kering", "kusam"],
+                steps: [
+                  "Pembersihan menyeluruh & aplikasi krim anestesi (mati rasa) selama 30-45 menit",
+                  "Desinfeksi antiseptik wajah",
+                  "Penyuntikan cairan Skinbooster mikro oleh dokter ahli di titik-titik wajah strategis",
+                  "Aplikasi kompres dingin es penenang",
+                  "Pemberian salep antibiotik pelindung pasca tindakan",
+                ],
+                downtime:
+                  "Bintik kemerahan kecil di bekas titik jarum selama 2-3 hari. Dapat ditutupi concealer tipis setelah hari pertama.",
+              },
+              {
+                id: 7,
+                name: "Premium Medical Chemical Peeling",
+                type: "doctor",
+                price: 750000,
+                duration: 45,
+                shortDesc:
+                  "Peeling asam glikolat/salisilat tingkat medis untuk mempercepat regenerasi sel kulit mati yang membandel.",
+                fullDesc:
+                  "Aplikasi formula zat asam organik konsentrasi medis oleh dokter untuk mengelupas lapisan terluar kulit mati secara terkontrol. Sangat ampuh menyembuhkan bruntusan beruntun, mengecilkan pori-pori tersumbat komedo kronis, serta memudarkan bekas bopeng dangkal.",
+                concerns: ["jerawat", "kusam"],
+                steps: [
+                  "Cleansing menyeluruh & degreasing (pembersihan minyak berlebih dengan alkohol khusus)",
+                  "Aplikasi vaseline di area sensitif (sudut mata, hidung, bibir)",
+                  "Aplikasi cairan peeling khusus sesuai keluhan pasien oleh dokter",
+                  "Penetralan zat asam peel setelah durasi tepat (biasanya 3-5 menit)",
+                  "Aplikasi soothing cream pereda panas matahari",
+                ],
+                downtime:
+                  "Proses pengelupasan halus tidak berpasir selama 3-5 hari ke depan. Dilarang mengelupas kulit secara paksa dengan tangan.",
+              },
+              {
+                id: 8,
+                name: "HIFU Contour Ultra-Lift (V-Shape)",
+                type: "doctor",
+                price: 2500000,
+                duration: 60,
+                shortDesc:
+                  "Metode gelombang ultrasonik terfokus tingkat kedalaman tinggi untuk mengencangkan pipi kendur dan merampingkan double chin.",
+                fullDesc:
+                  "High-Intensity Focused Ultrasound (HIFU) memancarkan gelombang suara terfokus ke lapisan otot SMAS (lapisan yang ditarik saat operasi bedah plastik). Merangsang renovasi kolagen secara instan untuk mengangkat bagian pipi yang turun (jowls), merampingkan tumpukan lemak dagu (double chin), dan mempertegas garis rahang secara alami.",
+                concerns: ["penuaan"],
+                steps: [
+                  "Pembersihan wajah & penandaan garis anatomis wajah (grid line)",
+                  "Aplikasi gel ultrasound dingin tebal",
+                  "Tembakan gelombang HIFU terfokus menggunakan transduser khusus (dokter memposisikan kedalaman 3.0mm & 4.5mm)",
+                  "Pembersihan sisa gel",
+                  "Aplikasi pelembap kencang & sunscreen pelindung",
+                ],
+                downtime:
+                  "Tidak ada downtime luar. Terkadang timbul nyeri pegal otot rahang jika ditekan selama 1-2 minggu pertama, pertanda kolagen baru sedang tumbuh kuat.",
+              },
+            ];
+          },
+
+          // Get Filtered Treatments
+          get filteredTreatments() {
+            return this.treatments.filter((item) => {
+              // Category match
+              const matchesCategory =
+                this.activeCategory === "all" ||
+                item.type === this.activeCategory;
+
+              // Concern match
+              const matchesConcern =
+                this.selectedConcern === "all" ||
+                item.concerns.includes(this.selectedConcern);
+
+              // Search text match
+              const matchesSearch =
+                item.name
+                  .toLowerCase()
+                  .includes(this.searchQuery.toLowerCase()) ||
+                item.shortDesc
+                  .toLowerCase()
+                  .includes(this.searchQuery.toLowerCase()) ||
+                item.fullDesc
+                  .toLowerCase()
+                  .includes(this.searchQuery.toLowerCase());
+
+              return matchesCategory && matchesConcern && matchesSearch;
+            });
+          },
+
+          // Dynamic Header Title Helper
+          categoryTitle() {
+            let concernName = "";
+            if (this.selectedConcern !== "all") {
+              concernName =
+                " Khusus " +
+                {
+                  kusam: "Masalah Kusam",
+                  jerawat: "Kulit Berjerawat",
+                  penuaan: "Anti-Aging & Penuaan",
+                  kering: "Kulit Kering & Dehidrasi",
+                  enno: "Kulit Enno",
+                }[this.selectedConcern];
+            }
+
+            if (this.activeCategory === "all")
+              return "Semua Treatment" + concernName;
+            if (this.activeCategory === "facial")
+              return "Facial Treatments" + concernName;
+            if (this.activeCategory === "doctor")
+              return "Doctor Treatments" + concernName;
+            return "Menu Perawatan";
+          },
+
+          // Reset Filters Function
+          resetFilters() {
+            this.searchQuery = "";
+            this.activeCategory = "all";
+            this.selectedConcern = "all";
+          },
+
+          // Cart Handlers
+          toggleSelection(item) {
+            const idx = this.selectedTreatments.findIndex(
+              (t) => t.id === item.id,
+            );
+            if (idx > -1) {
+              this.selectedTreatments.splice(idx, 1);
+              this.triggerToast(`"${item.name}" dihapus dari daftar pilihan.`);
+            } else {
+              this.selectedTreatments.push(item);
+              this.triggerToast(`"${item.name}" ditambahkan ke konsultasi.`);
+            }
+          },
+
+          isAdded(id) {
+            return this.selectedTreatments.some((t) => t.id === id);
+          },
+
+          clearSelection() {
+            this.selectedTreatments = [];
+            this.triggerToast("Semua pilihan perawatan dikosongkan.");
+          },
+
+          // Computed Totals
+          get totalDuration() {
+            return this.selectedTreatments.reduce(
+              (acc, curr) => acc + curr.duration,
+              0,
+            );
+          },
+
+          get totalPrice() {
+            return this.selectedTreatments.reduce(
+              (acc, curr) => acc + curr.price,
+              0,
+            );
+          },
+
+          // Helper formatting currency
+          formatRupiah(value) {
+            return new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(value);
+          },
+
+          // Modal Detail Actions
+          openDetails(item) {
+            this.selectedItemDetail = item;
+          },
+
+          // Evaluation Skin Quiz
+          runQuizEvaluation() {
+            this.quizStep = 2;
+
+            // Simple logic matching recommendations based on answers
+            let recommendedIds = [];
+            if (this.quizAnswers.target === "kusam") {
+              recommendedIds = [2, 5]; // Brightening Facial, Laser
+            } else if (this.quizAnswers.target === "jerawat") {
+              recommendedIds = [3, 7]; // Acne Facial, Chemical Peeling
+            } else if (this.quizAnswers.target === "vshape") {
+              recommendedIds = [4, 8]; // RF Gold, HIFU V-Shape
+            } else {
+              recommendedIds = [1, 6]; // Hydra Facial, Skinbooster
+            }
+
+            this.quizRecommendations = this.treatments.filter((item) =>
+              recommendedIds.includes(item.id),
+            );
+          },
+
+          closeQuizModal() {
+            this.openQuiz = false;
+            // Wait for animations before resetting
+            setTimeout(() => {
+              this.quizStep = 0;
+              this.quizAnswers = { skinType: "", target: "" };
+              this.quizRecommendations = [];
+            }, 350);
+          },
+
+          // Simulated Clipboard Copy for iframe security
+          copyDetailsSummary() {
+            let summaryText = "Rencana Perawatan Aura Glow Clinic\n";
+            summaryText += `Kode Pilihan: AG-${Math.floor(100 + Math.random() * 900)}\n\n`;
+
+            this.selectedTreatments.forEach((item, index) => {
+              summaryText += `${index + 1}. ${item.name} (${item.type === "facial" ? "Facial" : "Dokter"}) - ${this.formatRupiah(item.price)}\n`;
+            });
+
+            summaryText += `\nEstimasi Total Waktu: ${this.totalDuration} Menit\n`;
+            summaryText += `Estimasi Total Biaya: ${this.formatRupiah(this.totalPrice)}\n`;
+
+            // Using iframe compliant legacy execCommand fallback
+            const el = document.createElement("textarea");
+            el.value = summaryText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand("copy");
+            document.body.removeChild(el);
+
+            this.triggerToast("Ringkasan teks berhasil disalin ke papan klip!");
+          },
+
+          // Elegant custom toast alert
+          triggerToast(message) {
+            this.toastMessage = message;
+            setTimeout(() => {
+              this.toastMessage = "";
+            }, 3500);
+          },
+        };
+      }
+    </script>
+  </body>
+</html>
